@@ -87,5 +87,5 @@ def main():
         time.sleep(int(os.environ['RUN_INTERVAL']))
 
 
-if __name__ == '__main__': π
+if __name__ == '__main__':
     main()
