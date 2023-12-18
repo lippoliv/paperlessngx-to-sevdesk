@@ -1,6 +1,17 @@
 # PaperlessNGX to sevDesk
 
-Poll new files from PaperlessNGX and push them to sevDesk as new voucher.
+Simplify and streamline your document management with the [PaperlessNGX](https://docs.paperless-ngx.com/)
+to [sevDesk](https://sevdesk.de/) application. This lightweight and efficient tool automates the transfer of files from
+PaperlessNGX to sevDesk, seamlessly integrating your document workflow. This application ensures that your expense
+documents are accurately recorded and available in sevDesk.
+
+Configuring the application is straightforward using environment variables. The flexibility of the configuration
+empowers you to customize the application according to your document categorization preferences.
+
+Installation is a breeze with Docker Compose, and the provided example clearly guides you through the setup process. The
+application's continuous loop ensures that it consistently monitors for new documents, providing a hands-free solution
+to keep your sevDesk account up-to-date. Take control of your document management, save time, and ensure accuracy with
+the PaperlessNGX to sevDesk application.
 
 ## Configuration
 
