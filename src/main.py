@@ -3,22 +3,54 @@ import json
 import os
 import string
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
 import requests
 from requests import Response
 
+
+@dataclass()
+class Config:
+    paperlessngx_url: str = None
+    paperlessngx_token: str = None
+    paperlessngx_filter_tag_id: str = None
+    paperlessngx_filter_document_type_id: str = None
+    sevdesk_token: str = None
+    run_interval: int = None
+
+    def is_valid(self):
+        if not self.paperlessngx_url:
+            return False
+
+        if not self.paperlessngx_token:
+            return False
+
+        if not self.sevdesk_token:
+            return False
+
+        return True
+
+
 sevdesk_url: Final[string] = "https://my.sevdesk.de/api/v1"
 last_downloaded_document_id: int = 0
+config: Config = Config(
+    paperlessngx_url=os.environ['PAPERLESSNGX_URL'] or "",
+    paperlessngx_token=os.environ['PAPERLESSNGX_TOKEN'] or "",
+    paperlessngx_filter_tag_id=os.environ['PAPERLESSNGX_FILTER_TAG_ID'] or 0,
+    paperlessngx_filter_document_type_id=os.environ['PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID'] or 0,
+    sevdesk_token=os.environ['SEVDESK_TOKEN'] or 0,
+    run_interval=int(os.environ['RUN_INTERVAL']) or 300,
+)
 
 
 def paperlessngx_get(path: string) -> Response:
     return requests.get(
-        os.environ['PAPERLESSNGX_URL'] + path,
+        config.paperlessngx_url + path,
         allow_redirects=False,
         headers={
-            "Authorization": "Token " + os.environ['PAPERLESSNGX_TOKEN']
+            "Authorization": "Token " + config.paperlessngx_token
         }
     )
 
@@ -29,8 +61,8 @@ def paperlessngx_lookup_new_documents():
     # lookup documents
     response = paperlessngx_get(
         "/api/documents/?query=added:%5B-1%20week%20to%20now%5D" +
-        "&tags__id__all=" + os.environ['PAPERLESSNGX_FILTER_TAG_ID'] + "" +
-        "&document_type__id__in=" + os.environ['PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID'] + "" +
+        "&tags__id__all=" + config.paperlessngx_filter_tag_id + "" +
+        "&document_type__id__in=" + config.paperlessngx_filter_document_type_id + "" +
         "&sort=created" +
         "&reverse=1"
     )
@@ -60,7 +92,7 @@ def sevdesk_upload_file(local_file_path: string) -> bool:
     response = requests.post(
         sevdesk_url + "/Voucher/Factory/createVoucherFromFile",
         headers={
-            "Authorization": os.environ['SEVDESK_TOKEN'],
+            "Authorization": config.sevdesk_token,
             "Accept": "application/json",
         },
         data={'creditDebit': 'C'},
@@ -80,11 +112,19 @@ def sevdesk_upload_workdir():
 
 
 def main():
+    if not config.is_valid():
+        print("Config invalid")
+        print("You need to at leaset specify the following environment variables:")
+        print("- PAPERLESSNGX_URL")
+        print("- PAPERLESSNGX_TOKEN")
+        print("- SEVDESK_TOKEN")
+        exit(1)
+
     while True:
         paperlessngx_lookup_new_documents()
         sevdesk_upload_workdir()
 
-        time.sleep(int(os.environ['RUN_INTERVAL']))
+        time.sleep(config.run_interval)
 
 
 if __name__ == '__main__':
