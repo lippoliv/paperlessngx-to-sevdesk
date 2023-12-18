@@ -10,8 +10,6 @@
 
 ### Bug Fixes
 
-* correct name and syntax for docker build workflow ([9889eb9](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/9889eb966b7392406cd187c2df94f2a69b0ba5fb))
-* RUN_INTERVAL is optional, not SEVDESK_TOKEN ([efe04d9](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/efe04d9c3aed22d1ba3a1c26427a973d7a59e8d0))
 * show error message if important env var is not set ([d2c9af1](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/d2c9af1035e79f0ee7579b5a003ee8cd05027c3b))
 
 
