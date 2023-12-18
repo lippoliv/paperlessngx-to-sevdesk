@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.0...v1.0.1) (2023-12-18)
+
+
+### Bug Fixes
+
+* run actions on release please tags ([ecb620c](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/ecb620c7c885bbd2b7d842c6e7e3aadd13c46017))
+
 ## 1.0.0 (2023-12-18)
 
 
