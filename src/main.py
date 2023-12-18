@@ -36,12 +36,12 @@ class Config:
 sevdesk_url: Final[string] = "https://my.sevdesk.de/api/v1"
 last_downloaded_document_id: int = 0
 config: Config = Config(
-    paperlessngx_url=os.environ['PAPERLESSNGX_URL'] or "",
-    paperlessngx_token=os.environ['PAPERLESSNGX_TOKEN'] or "",
-    paperlessngx_filter_tag_id=os.environ['PAPERLESSNGX_FILTER_TAG_ID'] or 0,
-    paperlessngx_filter_document_type_id=os.environ['PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID'] or 0,
-    sevdesk_token=os.environ['SEVDESK_TOKEN'] or 0,
-    run_interval=int(os.environ['RUN_INTERVAL']) or 300,
+    paperlessngx_url=os.getenv('PAPERLESSNGX_URL') or "",
+    paperlessngx_token=os.getenv('PAPERLESSNGX_TOKEN') or "",
+    paperlessngx_filter_tag_id=os.getenv('PAPERLESSNGX_FILTER_TAG_ID') or 0,
+    paperlessngx_filter_document_type_id=os.getenv('PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID') or 0,
+    sevdesk_token=os.getenv('SEVDESK_TOKEN') or 0,
+    run_interval=int(os.getenv('RUN_INTERVAL')) or 300,
 )
 
 
@@ -59,12 +59,18 @@ def paperlessngx_lookup_new_documents():
     global last_downloaded_document_id
 
     # lookup documents
+    lookup_url = ("/api/documents/?query=added:%5B-1%20week%20to%20now%5D" +
+                  "&sort=created" +
+                  "&reverse=1")
+
+    if config.paperlessngx_filter_tag_id:
+        lookup_url += "&tags__id__all=" + config.paperlessngx_filter_tag_id
+
+    if config.paperlessngx_filter_document_type_id:
+        lookup_url += "&document_type__id__in=" + config.paperlessngx_filter_document_type_id
+
     response = paperlessngx_get(
-        "/api/documents/?query=added:%5B-1%20week%20to%20now%5D" +
-        "&tags__id__all=" + config.paperlessngx_filter_tag_id + "" +
-        "&document_type__id__in=" + config.paperlessngx_filter_document_type_id + "" +
-        "&sort=created" +
-        "&reverse=1"
+        lookup_url
     )
     data = json.loads(response.content)
     new_document_ids = sorted(data['all'])
