@@ -1,4 +1,4 @@
-FROM python:3.12.1-bookworm
+FROM python:3.11.7-slim
 
 MAINTAINER Oliver Lippert <oliver@lipperts-web.de>
 
