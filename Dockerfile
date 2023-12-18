@@ -11,10 +11,11 @@ ENV SEVDESK_TOKEN=""
 
 VOLUME /app/workdir
 
-RUN pip install requests
-
 COPY src /app
 
 WORKDIR /app
 
-CMD python3 main.py
+RUN pip install pipenv
+RUN pipenv sync
+
+CMD pipenv run python main.py
