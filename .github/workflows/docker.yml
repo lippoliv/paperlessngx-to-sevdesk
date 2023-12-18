@@ -1,11 +1,11 @@
-name: Publish Docker image (latest)
+name: Publish Docker image
 
 on:
   push:
     branches:
       - main
     tags:
-      - *
+      - '*'
 
 jobs:
   push_to_registry:
@@ -38,3 +38,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
