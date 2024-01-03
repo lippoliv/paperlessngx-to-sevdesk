@@ -36,6 +36,7 @@ version: "3"
 services:
   worker:
     image: lippertsweb/paperlessngx-to-sevdesk:latest
+    restart: unless-stopped
     environment:
       # You PaperlessNGX url (e.g. "https://paperle.ss" or "http://192.168.0.1:8080")
       PAPERLESSNGX_URL: "..."
