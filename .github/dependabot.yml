@@ -7,15 +7,18 @@ version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "src"
+    labels: [ ]
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "docker"
     directory: "/"
+    labels: [ ]
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    labels: [ ]
     schedule:
       interval: "monthly"
