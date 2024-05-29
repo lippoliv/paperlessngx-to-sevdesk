@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
     steps:
       - name: PR Conventional Commit Validation
-        uses: ytanikin/PRConventionalCommits@b7be9213c4fa33260646db6c9b905332dc90b310 # 1.1.0
+        uses: ytanikin/PRConventionalCommits@8d258b54939f6769fcd935a52b96d6b0383a00c5 # 1.2.0
         with:
           task_types: '["build", "ci", "docs", "feat", "fix", "perf", "refactor", "style", "test", "chore"]'
           add_label: 'true'
