@@ -5,7 +5,6 @@
 
 ### Bug Fixes
 
-* index out of range error ([e8c6963](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/e8c696345cc95c2e04bded6c4441d9045072d35d))
 * index out of range error ([#36](https://github.com/lippoliv/paperlessngx-to-sevdesk/issues/36)) ([f237d90](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/f237d90aa80bbb48d2163dc8980ed0d39a8d885c))
 
 ## [1.0.1](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.0...v1.0.1) (2023-12-18)
