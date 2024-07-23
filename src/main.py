@@ -75,7 +75,9 @@ def paperlessngx_lookup_new_documents():
     data = json.loads(response.content)
     new_document_ids = sorted(data['all'])
     if last_downloaded_document_id == 0:
-        last_downloaded_document_id = new_document_ids[len(new_document_ids) - 1]
+        if len(new_document_ids):
+            last_downloaded_document_id = new_document_ids[len(new_document_ids) - 1]
+
         return
 
     # download found documents
