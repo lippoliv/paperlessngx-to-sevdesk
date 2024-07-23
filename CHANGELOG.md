@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.1...v1.0.2) (2024-07-23)
+
+
+### Bug Fixes
+
+* index out of range error ([#36](https://github.com/lippoliv/paperlessngx-to-sevdesk/issues/36)) ([f237d90](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/f237d90aa80bbb48d2163dc8980ed0d39a8d885c))
+
 ## [1.0.1](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.0...v1.0.1) (2023-12-18)
 
 
