@@ -159,15 +159,12 @@ class PaperlessNgxWebhookHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
 
-def start_webhook_server():
-    if not config.paperlessngx_webhook_port:
-        return False
-
+def start_webhook_server(port: int):
     try:
         # noinspection PyTypeChecker
-        server = HTTPServer(("", config.paperlessngx_webhook_port), PaperlessNgxWebhookHandler)
+        server = HTTPServer(("", port), PaperlessNgxWebhookHandler)
 
-        print(f"Webhook server started on port {config.paperlessngx_webhook_port}, polling is disabled")
+        print(f"Webhook server started on port {port}, polling is disabled")
         server.serve_forever()
 
         return True
@@ -190,7 +187,7 @@ def main():
         exit(1)
 
     if config.paperlessngx_webhook_port:
-        start_webhook_server()
+        start_webhook_server(config.paperlessngx_webhook_port)
     else:
         while True:
             paperlessngx_lookup_new_documents()
