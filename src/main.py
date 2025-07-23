@@ -126,11 +126,37 @@ def sevdesk_upload_workdir():
 class PaperlessNgxWebhookHandler(BaseHTTPRequestHandler):
     # noinspection PyPep8Naming
     def do_POST(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
+        content_length = int(self.headers['Content-Length'])
+        if content_length <= 0:
+            print(f"Invalid webhook request received")
 
-        print("Webhook request received")
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"Error: No data received")
+            return
+
+        pdf_data = self.rfile.read(content_length)
+        if not pdf_data:
+            print(f"Invalid webhook request received")
+
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"Error: Empty PDF data")
+            return
+
+        print(f"Webhook request received")
+
+        timestamp = int(time.time())
+        file = Path(f"workdir/webhook_{timestamp}.pdf")
+        file.write_bytes(pdf_data)
+
+        sevdesk_upload_workdir()
+
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
 
 
 def start_webhook_server():
@@ -153,7 +179,6 @@ def start_webhook_server():
 def main():
     if not config.is_valid():
         print("Config invalid")
-        print("You need to at leaset specify the following environment variables:")
         print("- PAPERLESSNGX_URL")
         print("- PAPERLESSNGX_TOKEN")
         print("- SEVDESK_TOKEN")
