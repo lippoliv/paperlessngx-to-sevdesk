@@ -4,6 +4,7 @@ import os
 import string
 import time
 from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Final
 
@@ -17,14 +18,15 @@ class Config:
     paperlessngx_token: str = None
     paperlessngx_filter_tag_id: str = None
     paperlessngx_filter_document_type_id: str = None
+    paperlessngx_webhook_port: int = None
     sevdesk_token: str = None
     run_interval: int = None
 
     def is_valid(self):
-        if not self.paperlessngx_url:
-            return False
+        polling = self.paperlessngx_token and self.paperlessngx_url
+        webhooks = self.paperlessngx_webhook_port
 
-        if not self.paperlessngx_token:
+        if not polling and not webhooks:
             return False
 
         if not self.sevdesk_token:
@@ -40,6 +42,7 @@ config: Config = Config(
     paperlessngx_token=os.getenv('PAPERLESSNGX_TOKEN') or "",
     paperlessngx_filter_tag_id=os.getenv('PAPERLESSNGX_FILTER_TAG_ID') or 0,
     paperlessngx_filter_document_type_id=os.getenv('PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID') or 0,
+    paperlessngx_webhook_port=int(os.getenv('PAPERLESSNGX_WEBHOOK_PORT') or 0),
     sevdesk_token=os.getenv('SEVDESK_TOKEN') or 0,
     run_interval=int(os.getenv('RUN_INTERVAL')) or 300,
 )
@@ -120,20 +123,77 @@ def sevdesk_upload_workdir():
             print("- failed")
 
 
+class PaperlessNgxWebhookHandler(BaseHTTPRequestHandler):
+    # noinspection PyPep8Naming
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        if content_length <= 0:
+            print(f"Invalid webhook request received")
+
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"Error: No data received")
+            return
+
+        pdf_data = self.rfile.read(content_length)
+        if not pdf_data:
+            print(f"Invalid webhook request received")
+
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"Error: Empty PDF data")
+            return
+
+        print(f"Webhook request received")
+
+        timestamp = int(time.time())
+        file = Path(f"workdir/webhook_{timestamp}.pdf")
+        file.write_bytes(pdf_data)
+
+        sevdesk_upload_workdir()
+
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+
+
+def start_webhook_server(port: int):
+    try:
+        # noinspection PyTypeChecker
+        server = HTTPServer(("", port), PaperlessNgxWebhookHandler)
+
+        print(f"Webhook server started on port {port}, polling is disabled")
+        server.serve_forever()
+
+        return True
+    except Exception as e:
+        print(f"Failed to start webhook server: {e}")
+        return False
+
+
 def main():
     if not config.is_valid():
         print("Config invalid")
-        print("You need to at leaset specify the following environment variables:")
+        print("- SEVDESK_TOKEN")
+
+        print("and either")
         print("- PAPERLESSNGX_URL")
         print("- PAPERLESSNGX_TOKEN")
-        print("- SEVDESK_TOKEN")
+
+        print("or")
+        print("- PAPERLESSNGX_WEBHOOK_PORT")
         exit(1)
 
-    while True:
-        paperlessngx_lookup_new_documents()
-        sevdesk_upload_workdir()
+    if config.paperlessngx_webhook_port:
+        start_webhook_server(config.paperlessngx_webhook_port)
+    else:
+        while True:
+            paperlessngx_lookup_new_documents()
+            sevdesk_upload_workdir()
 
-        time.sleep(config.run_interval)
+            time.sleep(config.run_interval)
 
 
 if __name__ == '__main__':
