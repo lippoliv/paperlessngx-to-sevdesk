@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.2...v2.0.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** require python 3.13 (after #47)
+
+### Features
+
+* add success boot log output incl. info about starting document id ([#49](https://github.com/lippoliv/paperlessngx-to-sevdesk/issues/49)) ([7cb482d](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/7cb482d3f5c61d80c15955b1ad29ce7f2320d3b8))
+* add webhook endpoint ([#51](https://github.com/lippoliv/paperlessngx-to-sevdesk/issues/51)) ([d94cc32](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/d94cc32d97f46fe65b23843860836f2c68042675))
+
+
+### Miscellaneous Chores
+
+* **deps:** require python 3.13 (after [#47](https://github.com/lippoliv/paperlessngx-to-sevdesk/issues/47)) ([68e3ada](https://github.com/lippoliv/paperlessngx-to-sevdesk/commit/68e3ada3369fb483137426fccc8c4226bf7ca554))
+
 ## [1.0.2](https://github.com/lippoliv/paperlessngx-to-sevdesk/compare/v1.0.1...v1.0.2) (2024-07-23)
 
 
