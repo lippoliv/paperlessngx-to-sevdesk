@@ -20,20 +20,42 @@ The following environment variables are used for configuration
 | Name                                 | Description                                                                |
 |--------------------------------------|----------------------------------------------------------------------------|
 | RUN_INTERVAL                         | **Optional:** How often to scan for new files (default: 300)               |
-| PAPERLESSNGX_URL                     | The PaperlessNGX url (e.g. `https://paperle.ss`)                           |
-| PAPERLESSNGX_TOKEN                   | The PaperlessNGX token to be used for fetching new files                   |
+| PAPERLESSNGX_URL                     | **Optional:** The PaperlessNGX url (e.g. `https://paperle.ss`)             |
+| PAPERLESSNGX_TOKEN                   | **Optional:** The PaperlessNGX token to be used for fetching new files     |
 | PAPERLESSNGX_FILTER_TAG_ID           | **Optional:** The PaperlessNGX tag (ID) to filter documents for            |
 | PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID | **Optional:** The PaperlessNGX document type (ID) to filter documents for  |
 | PAPERLESSNGX_WEBHOOK_PORT            | **Optional:** Port to listen for PaperlessNGX webhooks (disabled if unset) |
 | SEVDESK_TOKEN                        | The sevDesk token to be used for uploading files                           |
+
+You need to either specify `PAPERLESSNGX_URL` and `PAPERLESSNGX_TOKEN` or `PAPERLESSNGX_WEBHOOK_PORT` (see below).
+
+## Polling vs. Webhooks
+
+You can either poll for new documents (see `RUN_INTERVAL`) or you can use
+[PaperlessNGX Webhooks](https://docs.paperless-ngx.com/usage/#workflow-action-webhook) (see `PAPERLESSNGX_WEBHOOK_PORT`)
+which is more efficient.
+
+### Polling
+
+As long as you don't configure `PAPERLESSNGX_WEBHOOK_PORT`, the tool will use polling to check for new documents. You
+can controll the intervall using `RUN_INTERVAL`.
+
+### Webhooks
+
+PaperlessNGX supports webhooks. Once you define `PAPERLESSNGX_WEBHOOK_PORT`, the tool will be ready to be used with
+webhooks. You can configure a webhook action like this:
+
+- **Webhook-URL**: Configure the endpoint of this tool, e.g. `http://my-pc:3000`.
+- **Webhook payload as JSON**: Should be disabled.
+- **Include document**: Must be enabled.
+
+**Important**: Whatever document will be sent to this endpoint, will be uploaded to sevDesk.
 
 ## Installation
 
 You can easily run this as a docker compose project:
 
 ```yaml
-version: "3"
-
 services:
   worker:
     image: lippertsweb/paperlessngx-to-sevdesk:latest
@@ -51,7 +73,7 @@ services:
       # Optional: The document type id to filter for (probably you just want invoices to be uploaded)
       # PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID: 1
 
-      # Optional: Port to listen for PaperlessNGX webhooks (disabled not unset)
+      # Optional: Port to listen for PaperlessNGX webhooks (disabled if unset)
       # PAPERLESSNGX_WEBHOOK_PORT: 3000
 
       # You can get token from user management screen (https://my.sevdesk.de/admin/userManagement)

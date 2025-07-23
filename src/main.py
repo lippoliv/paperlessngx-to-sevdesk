@@ -23,10 +23,10 @@ class Config:
     run_interval: int = None
 
     def is_valid(self):
-        if not self.paperlessngx_url:
-            return False
+        polling = self.paperlessngx_token and self.paperlessngx_url
+        webhooks = self.paperlessngx_webhook_port
 
-        if not self.paperlessngx_token:
+        if not polling and not webhooks:
             return False
 
         if not self.sevdesk_token:
@@ -167,7 +167,7 @@ def start_webhook_server():
         # noinspection PyTypeChecker
         server = HTTPServer(("", config.paperlessngx_webhook_port), PaperlessNgxWebhookHandler)
 
-        print(f"Webhook server started on port {config.paperlessngx_webhook_port}")
+        print(f"Webhook server started on port {config.paperlessngx_webhook_port}, polling is disabled")
         server.serve_forever()
 
         return True
@@ -179,9 +179,14 @@ def start_webhook_server():
 def main():
     if not config.is_valid():
         print("Config invalid")
+        print("- SEVDESK_TOKEN")
+
+        print("and either")
         print("- PAPERLESSNGX_URL")
         print("- PAPERLESSNGX_TOKEN")
-        print("- SEVDESK_TOKEN")
+
+        print("or")
+        print("- PAPERLESSNGX_WEBHOOK_PORT")
         exit(1)
 
     if config.paperlessngx_webhook_port:
