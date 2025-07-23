@@ -17,6 +17,7 @@ class Config:
     paperlessngx_token: str = None
     paperlessngx_filter_tag_id: str = None
     paperlessngx_filter_document_type_id: str = None
+    paperlessngx_webhook_port: int = None
     sevdesk_token: str = None
     run_interval: int = None
 
@@ -40,6 +41,7 @@ config: Config = Config(
     paperlessngx_token=os.getenv('PAPERLESSNGX_TOKEN') or "",
     paperlessngx_filter_tag_id=os.getenv('PAPERLESSNGX_FILTER_TAG_ID') or 0,
     paperlessngx_filter_document_type_id=os.getenv('PAPERLESSNGX_FILTER_DOCUMENT_TYPE_ID') or 0,
+    paperlessngx_webhook_port=int(os.getenv('PAPERLESSNGX_WEBHOOK_PORT') or 0),
     sevdesk_token=os.getenv('SEVDESK_TOKEN') or 0,
     run_interval=int(os.getenv('RUN_INTERVAL')) or 300,
 )
