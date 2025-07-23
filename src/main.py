@@ -4,6 +4,7 @@ import os
 import string
 import time
 from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Final
 
@@ -122,6 +123,33 @@ def sevdesk_upload_workdir():
             print("- failed")
 
 
+class PaperlessNgxWebhookHandler(BaseHTTPRequestHandler):
+    # noinspection PyPep8Naming
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        print("Webhook request received")
+
+
+def start_webhook_server():
+    if not config.paperlessngx_webhook_port:
+        return False
+
+    try:
+        # noinspection PyTypeChecker
+        server = HTTPServer(("", config.paperlessngx_webhook_port), PaperlessNgxWebhookHandler)
+
+        print(f"Webhook server started on port {config.paperlessngx_webhook_port}")
+        server.serve_forever()
+
+        return True
+    except Exception as e:
+        print(f"Failed to start webhook server: {e}")
+        return False
+
+
 def main():
     if not config.is_valid():
         print("Config invalid")
@@ -131,11 +159,14 @@ def main():
         print("- SEVDESK_TOKEN")
         exit(1)
 
-    while True:
-        paperlessngx_lookup_new_documents()
-        sevdesk_upload_workdir()
+    if config.paperlessngx_webhook_port:
+        start_webhook_server()
+    else:
+        while True:
+            paperlessngx_lookup_new_documents()
+            sevdesk_upload_workdir()
 
-        time.sleep(config.run_interval)
+            time.sleep(config.run_interval)
 
 
 if __name__ == '__main__':
