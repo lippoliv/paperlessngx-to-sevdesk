@@ -77,6 +77,7 @@ def paperlessngx_lookup_new_documents():
     if last_downloaded_document_id == 0:
         if len(new_document_ids):
             last_downloaded_document_id = new_document_ids[len(new_document_ids) - 1]
+            print("Connection successful, start scanning for new documents after " + str(last_downloaded_document_id))
 
         return
 
