@@ -1,4 +1,4 @@
-FROM python:3.13.0-slim
+FROM python:3.13.7-slim
 
 MAINTAINER Oliver Lippert <oliver@lipperts-web.de>
 
